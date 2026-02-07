@@ -39,6 +39,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":token_storage"))
+    implementation(project(":comon"))
+
     implementation("io.ktor:ktor-client-core:3.4.0")
     implementation("io.ktor:ktor-client-android:3.4.0")
     implementation("io.ktor:ktor-client-cio:3.4.0")
@@ -50,7 +53,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 
-    implementation(project(":token_storage"))
+
 
     implementation(libs.androidx.ui)
     implementation(libs.androidx.navigation.compose)
@@ -62,7 +65,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
 
-    implementation(project(":comon"))
+
 
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)

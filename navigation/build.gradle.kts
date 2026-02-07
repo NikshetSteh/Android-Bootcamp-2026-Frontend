@@ -38,6 +38,8 @@ android {
 dependencies {
     implementation(project(":authorization"))
     implementation(project(":registration"))
+    implementation(project(":token_storage"))
+
 
     implementation(libs.androidx.ui)
     implementation(libs.androidx.navigation.compose)
