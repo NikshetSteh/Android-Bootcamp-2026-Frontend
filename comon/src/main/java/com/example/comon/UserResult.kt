@@ -1,4 +1,4 @@
-package com.example.user_main.domain
+package com.example.comon
 
 sealed class UserResult {
     data class Success(val user: User) : UserResult()

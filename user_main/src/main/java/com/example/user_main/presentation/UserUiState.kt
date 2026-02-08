@@ -1,6 +1,6 @@
 package com.example.user_main.presentation
 
-import com.example.user_main.domain.User
+import com.example.comon.User
 
 sealed class UserUiState {
     object Loading : UserUiState()

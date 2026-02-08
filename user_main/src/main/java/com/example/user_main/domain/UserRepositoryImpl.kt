@@ -2,6 +2,9 @@ package com.example.user_main.domain
 
 
 import com.example.comon.GetUserResult
+import com.example.comon.User
+import com.example.comon.UserMapper
+import com.example.comon.UserResult
 import com.example.token_storage.domain.TokenRepository
 import com.example.user_main.data.UserNetworkDataSource
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -14,3 +14,4 @@ data class MeetingResponse(
     val status: MeetingStatus,
     val invitations: List<InvitationSummary>
 )
+

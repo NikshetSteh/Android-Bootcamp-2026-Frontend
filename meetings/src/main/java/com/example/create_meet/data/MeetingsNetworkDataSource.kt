@@ -1,12 +1,19 @@
 package com.example.create_meet.data
 
+import android.util.Log
 import com.example.comon.Network
+import com.example.comon.UserDto
+import com.example.create_meet.data.dto.CreateMeetingDto
 import com.example.create_meet.data.dto.MeetingResponse
 import com.example.create_meet.data.dto.MeetingsResult
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,6 +39,48 @@ class MeetingsNetworkDataSource @Inject constructor(
             }
         } catch (e: Exception) {
             MeetingsResult.Error(e.message ?: "Ошибка сети")
+        }
+    }
+
+    suspend fun getUsers(token: String): UsersResult = withContext(Dispatchers.IO) {
+        try {
+            val response = network.client.get("${network.HOST}/users") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+
+            return@withContext if (response.status.isSuccess()) {
+                val users = response.body<List<UserDto>>()
+                Log.d("USERS","${users}")
+                UsersResult.Success(users)
+            } else {
+                UsersResult.Error("Ошибка получения пользователей: ${response.status.value}")
+            }
+        } catch (e: Exception) {
+            UsersResult.Error(e.message ?: "Ошибка сети")
+        }
+    }
+
+    suspend fun createMeeting(
+        token: String,
+        request: CreateMeetingDto
+    ): CreateMeetingResult = withContext(Dispatchers.IO) {
+        try {
+            val response = network.client.post("${network.HOST}/meetings") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+
+            return@withContext if (response.status.isSuccess()) {
+                val meeting =
+                    response.body<MeetingResponse>()
+                CreateMeetingResult.Success(meeting)
+            } else {
+                CreateMeetingResult.Error("Ошибка создания встречи: ${response.status.value}")
+            }
+        } catch (e: Exception) {
+            CreateMeetingResult.Error(e.message ?: "Ошибка сети")
         }
     }
 }

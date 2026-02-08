@@ -2,9 +2,7 @@ package com.example.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
+
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -20,6 +18,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.authorization.presentation.AuthMainScreen
 import com.example.authorization.presentation.AuthScreenViewModel
+import com.example.create_meet.presentation.AddMeetingScreen
+import com.example.create_meet.presentation.AddMeetingViewModel
 import com.example.create_meet.presentation.EventsListScreen
 import com.example.create_meet.presentation.EventsListScreenViewModel
 import com.example.registration.presentation.RegisterMainScreen
@@ -33,7 +33,8 @@ fun AppNavigation(
     registerScreenViewModel: RegisterScreenViewModel,
     navigationViewModel: NavigationViewModel,
     userMainScreenViewModel: UserMainScreenViewModel,
-    eventsListScreenViewModel: EventsListScreenViewModel
+    eventsListScreenViewModel: EventsListScreenViewModel,
+    addMeetingViewModel: AddMeetingViewModel,
 ) {
     val navController = rememberNavController()
     val token by navigationViewModel.hasToken.collectAsState()
@@ -96,12 +97,20 @@ fun AppNavigation(
                 profileContent = {
                     EventsListScreen(
                         viewModel = eventsListScreenViewModel,
-//                        onAddNewMeet = {
-//
-//                        }
+                        onAddNewMeet = {
+                            navController.navigate(NavigationScreens.ADD_NEW_MEETING.routeName)
+                        }
                     )
                 }
             )
+        }
+
+        composable(NavigationScreens.ADD_NEW_MEETING.routeName) {
+            AddMeetingScreen(
+                addMeetingViewModel = addMeetingViewModel
+            ) {
+                navController.navigate(BottomNavScreen.Other.route)
+            }
         }
 
     }
@@ -119,13 +128,13 @@ fun MainWithNavBar(
                 BottomNavScreen.entries.forEach { item ->
                     NavigationBarItem(
                         icon = {
-                            Icon(
-                                imageVector = when (item) {
-                                    BottomNavScreen.Profile -> Icons.Default.Person
-                                    BottomNavScreen.Other -> Icons.Default.Star
-                                },
-                                contentDescription = item.label
-                            )
+//                            Icon(
+//                                imageVector = when (item) {
+//                                    BottomNavScreen.Profile -> Icons.Default.Person
+//                                    BottomNavScreen.Other -> Icons.Default.Star
+//                                },
+//                                contentDescription = item.label
+//                            )
                         },
                         label = { Text(item.label) },
                         selected = currentRoute == item.route,

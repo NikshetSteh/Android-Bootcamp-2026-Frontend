@@ -2,7 +2,7 @@ package com.example.user_main.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.user_main.domain.UserResult
+import com.example.comon.UserResult
 import com.example.user_main.domain.use_cases.LoadUserUseCase
 import com.example.user_main.domain.use_cases.LogoutUseCase
 import com.example.user_main.domain.use_cases.ObserveUserUseCase

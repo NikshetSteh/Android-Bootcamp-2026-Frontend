@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.authorization.presentation.AuthScreenViewModel
+import com.example.create_meet.presentation.AddMeetingViewModel
 import com.example.create_meet.presentation.EventsListScreenViewModel
 import com.example.navigation.AppNavigation
 import com.example.navigation.NavigationViewModel
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
             val navigationViewModel: NavigationViewModel = hiltViewModel()
             val userScreenViewModel: UserMainScreenViewModel = hiltViewModel()
             val eventsListScreenViewModel: EventsListScreenViewModel = hiltViewModel()
+            val addMeetingViewModel: AddMeetingViewModel = hiltViewModel()
 
             AndroidBootcamp2026FrontendTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -39,7 +41,8 @@ class MainActivity : ComponentActivity() {
                             registerScreenViewModel = registerViewModel,
                             navigationViewModel = navigationViewModel,
                             userMainScreenViewModel = userScreenViewModel,
-                            eventsListScreenViewModel = eventsListScreenViewModel
+                            eventsListScreenViewModel = eventsListScreenViewModel,
+                            addMeetingViewModel = addMeetingViewModel
                         )
                     }
 

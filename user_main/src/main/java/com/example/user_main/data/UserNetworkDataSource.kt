@@ -5,7 +5,7 @@ import com.example.comon.GetUserResult
 import com.example.comon.Network
 import com.example.comon.UserDto
 import com.example.comon.UserUpdateDto
-import com.example.user_main.domain.User
+import com.example.comon.User
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header

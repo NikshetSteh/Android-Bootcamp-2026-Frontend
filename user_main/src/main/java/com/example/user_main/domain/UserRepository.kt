@@ -1,5 +1,7 @@
 package com.example.user_main.domain
 
+import com.example.comon.User
+import com.example.comon.UserResult
 import kotlinx.coroutines.flow.StateFlow
 
 interface UserRepository {
