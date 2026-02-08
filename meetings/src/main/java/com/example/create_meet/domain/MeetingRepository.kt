@@ -1,6 +1,7 @@
 package com.example.create_meet.domain
 
 import com.example.comon.UserDto
+import com.example.create_meet.data.InvitationResult
 import com.example.create_meet.data.dto.CreateMeetingDto
 import com.example.create_meet.data.dto.MeetingResponse
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,8 @@ interface MeetingRepository {
     suspend fun getUsers(): Result<List<UserDto>>
 
     suspend fun createMeeting(request: CreateMeetingDto): Result<MeetingResponse>
+    suspend fun acceptInvitation(invitationId: String): InvitationResult
+    suspend fun declineInvitation(invitationId: String): InvitationResult
 
 }
 

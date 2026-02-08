@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
-
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +20,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-
+import com.example.create_meet.data.dto.InvitationStatus
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,78 +33,101 @@ fun EventsListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    val state = rememberPullToRefreshState()
+    val pullState = rememberPullToRefreshState()
+    val actionState by viewModel.actionState.collectAsStateWithLifecycle()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(actionState) {
+        when (actionState) {
+            is ActionState.Success -> {
+                snackbarHostState.showSnackbar("Успешно")
+                viewModel.resetActionState()
+            }
+            is ActionState.Error -> {
+                snackbarHostState.showSnackbar((actionState as ActionState.Error).message)
+                viewModel.resetActionState()
+            }
+            else -> Unit
+        }
+    }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Расписание встреч") }) },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddNewMeet) {
-//                Icon(Iconcons.Default.Add, contentDescription = "Add meet")
+                Icon(Icons.Default.Add, contentDescription = "Add meet")
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
 
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = viewModel::refresh,
-            state = state,
+            state = pullState,
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
         ) {
-
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(16.dp)
             ) {
 
-                if (uiState is EventsUiState.Success && (uiState as EventsUiState.Success).meetings.isEmpty()) {
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Нет запланированных встреч")
+                when (uiState) {
+                    is EventsUiState.Loading -> {
+                        item {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
                         }
                     }
-                }
 
-                if (uiState is EventsUiState.Loading) {
-                    item {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
+                    is EventsUiState.Error -> {
+                        item {
+                            ErrorState(
+                                onRefresh = viewModel::refresh,
+                                message = (uiState as EventsUiState.Error).message
+                            )
                         }
                     }
-                }
 
-                if (uiState is EventsUiState.Error) {
-                    item {
-                        ErrorState(
-                            onRefresh = viewModel::refresh,
-                            message = (uiState as EventsUiState.Error).message
-                        )
+                    is EventsUiState.Success -> {
+                        val meetings = (uiState as EventsUiState.Success).meetings
+                        if (meetings.isEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("Нет запланированных встреч")
+                                }
+                            }
+                        } else {
+                            items(items = meetings, key = { it.id }) { meeting ->
+                                MeetingItem(
+                                    meeting = meeting,
+                                    onAccept = { viewModel.accept(it) },
+                                    onDecline = { viewModel.decline(it) }
+                                )
+                            }
+                        }
                     }
-                }
 
-                if (uiState is EventsUiState.Success) {
-                    items(
-                        items = (uiState as EventsUiState.Success).meetings,
-                        key = { it.id }
-                    ) { meeting ->
-                        MeetingItem(meeting = meeting)
-                    }
+                    else -> {}
                 }
             }
         }
     }
 }
 
-
-
 @Composable
 fun MeetingItem(
     meeting: MeetingResponse,
+    onAccept: (String) -> Unit,
+    onDecline: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -110,6 +135,7 @@ fun MeetingItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
@@ -156,12 +182,25 @@ fun MeetingItem(
                 }
             )
 
-            if (meeting.invitations.isNotEmpty()) {
+            if (meeting.invitations.firstOrNull()?.status == InvitationStatus.PENDING) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Участники: ${meeting.invitations.size}",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = { onAccept(meeting.invitations.find { it.inviteeId == meeting.organizerId }!!.inviteeId) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Принять")
+                    }
+                    OutlinedButton(
+                        onClick = { onDecline(meeting.id) },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Отклонить")
+                    }
+                }
             }
         }
     }

@@ -33,6 +33,8 @@ class MeetingsNetworkDataSource @Inject constructor(
 
             return@withContext if (response.status.isSuccess()) {
                 val meetings = response.body<List<MeetingResponse>>()
+                Log.d("USERS","${meetings}")
+
                 MeetingsResult.Success(meetings)
             } else {
                 MeetingsResult.Error("Ошибка получения расписания: ${response.status.value}")
@@ -83,5 +85,58 @@ class MeetingsNetworkDataSource @Inject constructor(
             CreateMeetingResult.Error(e.message ?: "Ошибка сети")
         }
     }
+
+    suspend fun getInvitations(token: String): InvitationsResult = withContext(Dispatchers.IO) {
+        try {
+            val response = network.client.get("${network.HOST}/meetings/invitations") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return@withContext if (response.status.isSuccess()) {
+                val invites = response.body<List<InvitationResponse>>()
+                InvitationsResult.Success(invites)
+            } else {
+                InvitationsResult.Error("Ошибка получения приглашений: ${response.status.value}")
+            }
+        } catch (e: Exception) {
+            InvitationsResult.Error(e.message ?: "Ошибка сети")
+        }
+    }
+
+
+    suspend fun acceptInvitation(token: String, invitationId: String): InvitationResult = withContext(Dispatchers.IO) {
+        try {
+            Log.d("INVATATIONS", "$invitationId")
+            val response = network.client.post("${network.HOST}/meetings/invitations/$invitationId/accept") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return@withContext if (response.status.isSuccess()) {
+                InvitationResult.Success
+            } else {
+                InvitationResult.Error("Ошибка подтверждения: ${response.status.value}")
+            }
+        } catch (e: Exception) {
+            InvitationResult.Error(e.message ?: "Ошибка сети")
+        }
+    }
+
+    suspend fun declineInvitation(token: String, invitationId: String): InvitationResult = withContext(Dispatchers.IO) {
+        try {
+            val response = network.client.post("${network.HOST}/meetings/invitations/$invitationId/decline") {
+                header(HttpHeaders.Authorization, "Bearer $token")
+            }
+
+            return@withContext if (response.status.isSuccess()) {
+                InvitationResult.Success
+            } else {
+                InvitationResult.Error("Ошибка отклонения: ${response.status.value}")
+            }
+        } catch (e: Exception) {
+            InvitationResult.Error(e.message ?: "Ошибка сети")
+        }
+    }
+
 }
+
 

@@ -4,6 +4,9 @@ package com.example.create_meet.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.create_meet.data.InvitationResult
+import com.example.create_meet.domain.use_cases.AcceptInvitationUseCase
+import com.example.create_meet.domain.use_cases.DeclineInvitationUseCase
 import com.example.create_meet.domain.use_cases.LoadMeetingsUseCase
 import com.example.create_meet.domain.use_cases.ObserveMeetingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,14 +22,17 @@ import javax.inject.Inject
 @HiltViewModel
 class EventsListScreenViewModel @Inject constructor(
     observeMeetings: ObserveMeetingsUseCase,
-    private val loadMeetings: LoadMeetingsUseCase
-) : ViewModel() {
+    private val loadMeetings: LoadMeetingsUseCase,
+    private val acceptInvitationUseCase: AcceptInvitationUseCase,
+    private val declineInvitationUseCase: DeclineInvitationUseCase
+    ) : ViewModel() {
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
     private val _error = MutableStateFlow<Throwable?>(null)
-
+    private val _actionState = MutableStateFlow<ActionState>(ActionState.Idle)
+    val actionState: StateFlow<ActionState> = _actionState
     val uiState: StateFlow<EventsUiState> =
         observeMeetings()
             .combine(_error) { meetings, error ->
@@ -47,7 +53,9 @@ class EventsListScreenViewModel @Inject constructor(
     init {
         refresh()
     }
-
+    fun resetActionState() {
+        _actionState.value = ActionState.Idle
+    }
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
@@ -60,6 +68,26 @@ class EventsListScreenViewModel @Inject constructor(
                 _error.value = e
             } finally {
                 _isRefreshing.value = false
+            }
+        }
+    }
+
+    fun accept(invitationId: String) {
+        viewModelScope.launch {
+            _actionState.value = ActionState.Loading
+            when(val result = acceptInvitationUseCase(invitationId)) {
+                InvitationResult.Success -> _actionState.value = ActionState.Success
+                is InvitationResult.Error -> _actionState.value = ActionState.Error(result.message)
+            }
+        }
+    }
+
+    fun decline(invitationId: String) {
+        viewModelScope.launch {
+            _actionState.value = ActionState.Loading
+            when(val result = declineInvitationUseCase(invitationId)) {
+                InvitationResult.Success -> _actionState.value = ActionState.Success
+                is InvitationResult.Error -> _actionState.value = ActionState.Error(result.message)
             }
         }
     }

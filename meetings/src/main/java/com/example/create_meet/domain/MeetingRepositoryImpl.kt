@@ -64,6 +64,12 @@ class MeetingRepositoryImpl @Inject constructor(
         }
 
     }
+
+    override suspend fun acceptInvitation(invitationId: String) =
+        network.acceptInvitation(tokenRepository.getToken()!!, invitationId)
+
+    override suspend fun declineInvitation(invitationId: String) =
+        network.declineInvitation(tokenRepository.getToken()!!, invitationId)
 }
 
 

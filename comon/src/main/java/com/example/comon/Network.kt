@@ -13,8 +13,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 class Network {
-    val HOST = "http://10.0.2.2:8080"
-
+    val HOST = "https://permanently-sleek-spadefish.cloudpub.ru"
+//    "https://permanently-sleek-spadefish.cloudpub.ru"
     val client by lazy {
         HttpClient(CIO) {
             install(ContentNegotiation) {

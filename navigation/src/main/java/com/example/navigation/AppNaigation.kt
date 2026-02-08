@@ -2,6 +2,9 @@ package com.example.navigation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -128,13 +131,13 @@ fun MainWithNavBar(
                 BottomNavScreen.entries.forEach { item ->
                     NavigationBarItem(
                         icon = {
-//                            Icon(
-//                                imageVector = when (item) {
-//                                    BottomNavScreen.Profile -> Icons.Default.Person
-//                                    BottomNavScreen.Other -> Icons.Default.Star
-//                                },
-//                                contentDescription = item.label
-//                            )
+                            Icon(
+                                imageVector = when (item) {
+                                    BottomNavScreen.Profile -> Icons.Default.Person
+                                    BottomNavScreen.Other -> Icons.Default.Star
+                                },
+                                contentDescription = item.label
+                            )
                         },
                         label = { Text(item.label) },
                         selected = currentRoute == item.route,
