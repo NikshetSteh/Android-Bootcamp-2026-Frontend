@@ -1,6 +1,7 @@
 package com.example.user_main.domain
 
 
+import android.util.Log
 import com.example.comon.GetUserResult
 import com.example.comon.User
 import com.example.comon.UserMapper

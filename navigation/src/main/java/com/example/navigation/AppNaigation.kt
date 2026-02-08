@@ -85,7 +85,10 @@ fun AppNavigation(
             ) {
                 ProfileScreen(
                     viewModel = userMainScreenViewModel,
-                    onLogoutClick = { navController.navigate(NavigationScreens.AUTHORIZATION.routeName) }
+                    onLogoutClick = {
+                        navController.navigate(NavigationScreens.AUTHORIZATION.routeName)
+
+                    }
                 )
             }
         }

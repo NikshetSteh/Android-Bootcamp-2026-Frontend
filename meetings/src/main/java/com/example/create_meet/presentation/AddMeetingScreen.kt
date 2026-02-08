@@ -102,7 +102,7 @@ fun AddMeetingScreen(
                 value = vm.timeInput,
                 onValueChange = { vm.timeInput = it },
                 label = { Text("Время (HH:mm)") },
-                placeholder = { Text("14:30") },
+                placeholder = { Text("14:00") },
                 isError = vm.timeError != null,
                 modifier = Modifier.fillMaxWidth()
             )
