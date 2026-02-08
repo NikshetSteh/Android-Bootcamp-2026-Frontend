@@ -9,4 +9,5 @@ enum class NavigationScreens (
     REGISTER(routeName = "register"),
     MAIN(routeName = "main"),
     PROFILE(routeName = "profile"),
+    EVENTS(routeName = "events")
 }

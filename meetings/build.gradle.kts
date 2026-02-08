@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 25
+        minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation(project(":comon"))
+    implementation(project(":token_storage"))
 
     implementation("io.ktor:ktor-client-core:3.4.0")
     implementation("io.ktor:ktor-client-android:3.4.0")

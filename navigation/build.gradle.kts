@@ -11,7 +11,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 25
+        minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":authorization"))
     implementation(project(":registration"))
     implementation(project(":token_storage"))
+    implementation(project(":meetings"))
     implementation(project(":user_main"))
 
 

@@ -23,6 +23,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.authorization.presentation.AuthMainScreen
 import com.example.authorization.presentation.AuthScreenViewModel
+import com.example.create_meet.data.presentation.EventsListScreen
+import com.example.create_meet.data.presentation.EventsListScreenViewModel
 import com.example.registration.presentation.RegisterMainScreen
 import com.example.registration.presentation.RegisterScreenViewModel
 import com.example.user_main.presentation.ProfileScreen
@@ -33,7 +35,8 @@ fun AppNavigation(
     authViewModel: AuthScreenViewModel,
     registerScreenViewModel: RegisterScreenViewModel,
     navigationViewModel: NavigationViewModel,
-    userMainScreenViewModel: UserMainScreenViewModel
+    userMainScreenViewModel: UserMainScreenViewModel,
+    eventsListScreenViewModel: EventsListScreenViewModel
 ) {
     val navController = rememberNavController()
     val token by navigationViewModel.hasToken.collectAsState()
@@ -94,10 +97,8 @@ fun AppNavigation(
                     }
                 },
                 profileContent = {
-                    Text(
-                        text = "Экран: Встречи",
-                        modifier = Modifier.fillMaxSize(),
-                        style = MaterialTheme.typography.headlineSmall
+                    EventsListScreen(
+                        viewModel = eventsListScreenViewModel
                     )
                 }
             )
