@@ -1,7 +1,7 @@
 package com.example.create_meet.presentation
 
 import androidx.compose.runtime.Immutable
-import com.example.create_meet.data.MeetingResponse
+import com.example.create_meet.data.dto.MeetingResponse
 
 
 @Immutable

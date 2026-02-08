@@ -1,7 +1,6 @@
 package com.example.create_meet.domain
 
-import com.example.create_meet.data.MeetingResponse
-import com.example.create_meet.data.MeetingsResult
+import com.example.create_meet.data.dto.MeetingResponse
 import kotlinx.coroutines.flow.StateFlow
 
 

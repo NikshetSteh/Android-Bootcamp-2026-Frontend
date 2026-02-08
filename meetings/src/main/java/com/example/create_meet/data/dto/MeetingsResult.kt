@@ -1,4 +1,4 @@
-package com.example.create_meet.data
+package com.example.create_meet.data.dto
 
 sealed class MeetingsResult {
     data class Success(val meetings: List<MeetingResponse>) : MeetingsResult()

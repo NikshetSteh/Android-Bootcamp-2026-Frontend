@@ -3,9 +3,10 @@ package com.example.create_meet.presentation
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,11 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.comon.ErrorState
-import com.example.create_meet.data.MeetingResponse
-import com.example.create_meet.data.MeetingStatus
+import com.example.create_meet.data.dto.MeetingResponse
+import com.example.create_meet.data.dto.MeetingStatus
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,71 +31,75 @@ fun EventsListScreen(
     onAddNewMeet: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val state = uiState
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val state = rememberPullToRefreshState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Расписание встреч") })
-        },
+        topBar = { TopAppBar(title = { Text("Расписание встреч") }) },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-               onAddNewMeet()
-            }) {
+            FloatingActionButton(onClick = onAddNewMeet) {
                 Icon(Icons.Default.Add, contentDescription = "Add meet")
             }
         }
     ) { padding ->
-        Box(modifier = modifier.padding(padding)) {
-            when (state) {
-                is EventsUiState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentSize(Alignment.Center)
-                    )
-                }
 
-                is EventsUiState.Error -> {
-                    ErrorState(
-                        onRefresh = { viewModel.refresh() },
-                        message = state.message
-                    )
-                }
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = viewModel::refresh,
+            state = state,
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
 
-                is EventsUiState.Success -> {
-                    if (state.meetings.isEmpty()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+
+                if (uiState is EventsUiState.Success && (uiState as EventsUiState.Success).meetings.isEmpty()) {
+                    item {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             Text("Нет запланированных встреч")
                         }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(16.dp)
-                        ) {
-                            items(
-                                count = state.meetings.size,
-                            )
-                            {
-                                MeetingItem(meeting = state.meetings[it])
+                    }
+                }
 
-                            }
-//                            items(
-//                                items = state.meetings,
-//                                key = { it.id }
-//                            ) { meeting ->
-//                                MeetingItem(meeting = meeting)
-//                            }
+                if (uiState is EventsUiState.Loading) {
+                    item {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
                         }
+                    }
+                }
+
+                if (uiState is EventsUiState.Error) {
+                    item {
+                        ErrorState(
+                            onRefresh = viewModel::refresh,
+                            message = (uiState as EventsUiState.Error).message
+                        )
+                    }
+                }
+
+                if (uiState is EventsUiState.Success) {
+                    items(
+                        items = (uiState as EventsUiState.Success).meetings,
+                        key = { it.id }
+                    ) { meeting ->
+                        MeetingItem(meeting = meeting)
                     }
                 }
             }
         }
     }
 }
+
+
 
 @Composable
 fun MeetingItem(

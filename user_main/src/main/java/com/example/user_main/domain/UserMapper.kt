@@ -10,7 +10,7 @@ class UserMapper @Inject constructor() {
     fun map(dto: UserDto): User =
         User(
             fullName = dto.fullName,
-            phoneNumber = "+ ${PhoneNumberUtils.formatNumber(
+            phoneNumber = "${PhoneNumberUtils.formatNumber(
                     dto . phoneNumber,
             Locale.current.region
         )}" ,

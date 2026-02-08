@@ -1,9 +1,10 @@
 package com.example.create_meet.domain
 
-import com.example.create_meet.data.MeetingResponse
+import com.example.create_meet.data.dto.MeetingResponse
 import com.example.create_meet.data.MeetingsNetworkDataSource
-import com.example.create_meet.data.MeetingsResult
+import com.example.create_meet.data.dto.MeetingsResult
 import com.example.token_storage.domain.TokenRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
