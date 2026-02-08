@@ -38,6 +38,10 @@ fun EventsListScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(Unit) {
+        viewModel.loadInvitations()
+    }
+
     LaunchedEffect(actionState) {
         when (actionState) {
             is ActionState.Success -> {
@@ -109,8 +113,8 @@ fun EventsListScreen(
                             items(items = meetings, key = { it.id }) { meeting ->
                                 MeetingItem(
                                     meeting = meeting,
-                                    onAccept = { viewModel.accept(it) },
-                                    onDecline = { viewModel.decline(it) }
+                                    onAccept = { viewModel.accept( meeting.id) },
+                                    onDecline = { viewModel.decline(meeting.id) }
                                 )
                             }
                         }
@@ -182,7 +186,7 @@ fun MeetingItem(
                 }
             )
 
-            if (meeting.invitations.firstOrNull()?.status == InvitationStatus.PENDING) {
+            if (meeting.invitations.lastOrNull()?.status == InvitationStatus.PENDING) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

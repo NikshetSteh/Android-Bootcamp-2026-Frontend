@@ -4,9 +4,11 @@ package com.example.create_meet.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.create_meet.data.InvitationResult
+import com.example.create_meet.data.InvitationResponse
+import com.example.create_meet.domain.DomainResult
 import com.example.create_meet.domain.use_cases.AcceptInvitationUseCase
 import com.example.create_meet.domain.use_cases.DeclineInvitationUseCase
+import com.example.create_meet.domain.use_cases.GetInvitationsUseCase
 import com.example.create_meet.domain.use_cases.LoadMeetingsUseCase
 import com.example.create_meet.domain.use_cases.ObserveMeetingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +26,8 @@ class EventsListScreenViewModel @Inject constructor(
     observeMeetings: ObserveMeetingsUseCase,
     private val loadMeetings: LoadMeetingsUseCase,
     private val acceptInvitationUseCase: AcceptInvitationUseCase,
-    private val declineInvitationUseCase: DeclineInvitationUseCase
+    private val declineInvitationUseCase: DeclineInvitationUseCase,
+    private val getInvitationsUseCase: GetInvitationsUseCase,
     ) : ViewModel() {
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -33,6 +36,10 @@ class EventsListScreenViewModel @Inject constructor(
     private val _error = MutableStateFlow<Throwable?>(null)
     private val _actionState = MutableStateFlow<ActionState>(ActionState.Idle)
     val actionState: StateFlow<ActionState> = _actionState
+
+    private val _invitations = MutableStateFlow<List<InvitationResponse>>(emptyList())
+    val invitations: StateFlow<List<InvitationResponse>> = _invitations
+
     val uiState: StateFlow<EventsUiState> =
         observeMeetings()
             .combine(_error) { meetings, error ->
@@ -52,6 +59,7 @@ class EventsListScreenViewModel @Inject constructor(
 
     init {
         refresh()
+        loadInvitations()
     }
     fun resetActionState() {
         _actionState.value = ActionState.Idle
@@ -71,25 +79,68 @@ class EventsListScreenViewModel @Inject constructor(
             }
         }
     }
+    fun loadInvitations() {
+        viewModelScope.launch {
+            _invitations.value = emptyList()
+            _error.value = null
 
-    fun accept(invitationId: String) {
+            val result = getInvitationsUseCase()
+            result.onSuccess {
+                _invitations.value = result.getOrNull().orEmpty()
+
+            }.onFailure {
+                _error.value = it
+
+            }
+
+        }
+    }
+    fun accept(meetingId: String) {
         viewModelScope.launch {
             _actionState.value = ActionState.Loading
-            when(val result = acceptInvitationUseCase(invitationId)) {
-                InvitationResult.Success -> _actionState.value = ActionState.Success
-                is InvitationResult.Error -> _actionState.value = ActionState.Error(result.message)
+
+            val invite = _invitations.value.firstOrNull { it.meetingId == meetingId }
+            if (invite == null) {
+                _actionState.value = ActionState.Error("Приглашение не найдено")
+                return@launch
             }
+
+            when (val result = acceptInvitationUseCase(invite.id)) {
+                is DomainResult.Success -> {
+                    _actionState.value = ActionState.Success
+                    loadInvitations()
+                }
+                is DomainResult.Error -> {
+                    _actionState.value = ActionState.Error(result.message)
+                }
+            }
+
         }
     }
 
-    fun decline(invitationId: String) {
+    fun decline(meetingId: String) {
         viewModelScope.launch {
             _actionState.value = ActionState.Loading
-            when(val result = declineInvitationUseCase(invitationId)) {
-                InvitationResult.Success -> _actionState.value = ActionState.Success
-                is InvitationResult.Error -> _actionState.value = ActionState.Error(result.message)
+
+            val invite = _invitations.value.firstOrNull { it.meetingId == meetingId }
+            if (invite == null) {
+                _actionState.value = ActionState.Error("Приглашение не найдено")
+                return@launch
             }
+
+            when (val result = declineInvitationUseCase(invite.id)) {
+                is DomainResult.Success -> {
+                    _actionState.value = ActionState.Success
+                    loadInvitations()
+                }
+                is DomainResult.Error -> {
+                    _actionState.value = ActionState.Error(result.message)
+                }
+            }
+
         }
     }
+
+
 }
 

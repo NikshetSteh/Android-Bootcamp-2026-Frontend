@@ -2,6 +2,9 @@ package com.example.create_meet.domain
 
 import com.example.comon.UserDto
 import com.example.create_meet.data.CreateMeetingResult
+import com.example.create_meet.data.InvitationResponse
+import com.example.create_meet.data.InvitationResult
+import com.example.create_meet.data.InvitationsResult
 import com.example.create_meet.data.dto.MeetingResponse
 import com.example.create_meet.data.MeetingsNetworkDataSource
 import com.example.create_meet.data.UsersResult
@@ -65,11 +68,30 @@ class MeetingRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun acceptInvitation(invitationId: String) =
-        network.acceptInvitation(tokenRepository.getToken()!!, invitationId)
+    override suspend fun getInvitations(): Result<List<InvitationResponse>> {
+        val token = tokenRepository.getToken() ?: return Result.failure(Exception("Token is null"))
 
-    override suspend fun declineInvitation(invitationId: String) =
-        network.declineInvitation(tokenRepository.getToken()!!, invitationId)
+        return when(val result = network.getInvitations(token)) {
+            is InvitationsResult.Success -> Result.success(result.invitations)
+            is InvitationsResult.Error -> Result.failure(Exception(result.message))
+        }
+    }
+
+    override suspend fun acceptInvitation(invitationId: String): Result<Unit> {
+        val token = tokenRepository.getToken() ?: return Result.failure(Exception("Token is null"))
+        return when(val result = network.acceptInvitation(token, invitationId)) {
+            InvitationResult.Success -> Result.success(Unit)
+            is InvitationResult.Error -> Result.failure(Exception(result.message))
+        }
+    }
+
+    override suspend fun declineInvitation(invitationId: String): Result<Unit> {
+        val token = tokenRepository.getToken() ?: return Result.failure(Exception("Token is null"))
+        return when(val result = network.declineInvitation(token, invitationId)) {
+            InvitationResult.Success -> Result.success(Unit)
+            is InvitationResult.Error -> Result.failure(Exception(result.message))
+        }
+    }
 }
 
 
