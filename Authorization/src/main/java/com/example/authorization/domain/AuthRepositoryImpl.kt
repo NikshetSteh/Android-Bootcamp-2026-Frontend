@@ -1,6 +1,6 @@
 package com.example.authorization.domain
 
-import com.example.authorization.data.dto.AuthNetworkDataSource
+import com.example.authorization.data.AuthNetworkDataSource
 import com.example.authorization.domain.entites.UserLoginEntity
 import com.example.comon.RegisterResult
 import com.example.token_storage.domain.TokenRepository

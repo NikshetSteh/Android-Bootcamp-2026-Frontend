@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":authorization"))
     implementation(project(":registration"))
     implementation(project(":token_storage"))
+    implementation(project(":user_main"))
 
 
     implementation(libs.androidx.ui)

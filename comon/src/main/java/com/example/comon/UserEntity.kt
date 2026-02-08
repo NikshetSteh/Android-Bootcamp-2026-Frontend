@@ -1,7 +1,6 @@
-package com.example.registration.domain
+package com.example.comon
 
-
-data class UserRegisterEntity (
+data class UserEntity (
     val fullName: String,
 
     val phoneNumber: String,
