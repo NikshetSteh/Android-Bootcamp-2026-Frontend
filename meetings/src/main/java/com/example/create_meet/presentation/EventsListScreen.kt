@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.comon.ErrorState
 import com.example.create_meet.data.MeetingResponse
 import com.example.create_meet.data.MeetingStatus
 import java.time.Instant
@@ -23,26 +21,30 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun EventsListScreen(
     viewModel: EventsListScreenViewModel,
-    modifier: Modifier = Modifier,
-    onAddNewMeet: () -> Unit
+    modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val state = uiState
+    val state = uiState // Capture for smart cast
 
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Расписание встреч") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-               onAddNewMeet()
-            }) {
-                Icon(Icons.Default.Add, contentDescription = "Add meet")
+            FloatingActionButton(onClick = { viewModel.refresh() }) {
+                Icon(Icons.Default.Refresh, contentDescription = "Refresh")
             }
         }
     ) { padding ->
         Box(modifier = modifier.padding(padding)) {
             when (state) {
+                is EventsUiState.NotLoaded -> {
+                    Log.d("EVENTS", "Not loaded ststate")
+                    LaunchedEffect(state) {
+                        Log.d("EVENTS", "Refresh run")
+                        viewModel.refresh()
+                    }
+                }
                 is EventsUiState.Loading -> {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -52,10 +54,17 @@ fun EventsListScreen(
                 }
 
                 is EventsUiState.Error -> {
-                    ErrorState(
-                        onRefresh = { viewModel.refresh() },
-                        message = state.message
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(text = state.message)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(onClick = { viewModel.refresh() }) {
+                            Text("Повторить")
+                        }
+                    }
                 }
 
                 is EventsUiState.Success -> {
@@ -122,7 +131,7 @@ fun MeetingItem(
 
             if (!meeting.description.isNullOrBlank()) {
                 Text(
-                    text = meeting.description,
+                    text = meeting.description!!,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

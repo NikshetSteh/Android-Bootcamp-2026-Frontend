@@ -96,9 +96,9 @@ fun AppNavigation(
                 profileContent = {
                     EventsListScreen(
                         viewModel = eventsListScreenViewModel,
-                        onAddNewMeet = {
-
-                        }
+//                        onAddNewMeet = {
+//
+//                        }
                     )
                 }
             )
