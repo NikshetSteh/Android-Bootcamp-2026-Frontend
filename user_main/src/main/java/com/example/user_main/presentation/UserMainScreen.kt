@@ -1,5 +1,6 @@
 package com.example.user_main.presentation
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,6 +40,14 @@ fun ProfileScreen(
                     onEditClick = { viewModel.openEditDialog() },
                     onLogoutClick = onLogoutClick
                 )
+            }
+
+            is UserUiState.NotLoaded -> {
+                Log.d("USER", "Not loaded state")
+                LaunchedEffect(uiState) {
+                    Log.d("USER", "Run load user")
+                    viewModel.loadUser()
+                }
             }
         }
 

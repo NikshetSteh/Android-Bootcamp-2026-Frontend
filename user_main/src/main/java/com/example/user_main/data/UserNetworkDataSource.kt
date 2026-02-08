@@ -38,7 +38,7 @@ class UserNetworkDataSource @Inject constructor(
     ): GetUserResult =
         withContext(Dispatchers.IO) {
             try {
-                val response = network.client.put("${network.HOST}/users/me") {
+                val response = network.client.put("${network.HOST}/users/profile") {
                     header(HttpHeaders.Authorization, "Bearer $token")
                     contentType(ContentType.Application.Json)
                     setBody(

@@ -15,5 +15,5 @@ data class UserDto(
     val department: String,
 
     @SerialName("password")
-    val password: String
+    val password: String? = ""
 )

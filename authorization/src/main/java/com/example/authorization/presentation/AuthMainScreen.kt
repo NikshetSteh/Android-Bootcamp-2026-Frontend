@@ -31,6 +31,7 @@ import com.example.authorization.domain.entites.UserLoginEntity
 fun AuthMainScreen(
     authViewModel: AuthScreenViewModel,
     onRegisterClick: () -> Unit,
+    onLoginSuccess: () -> Unit
 ) {
     val uiState by authViewModel.uiState.collectAsState()
 
@@ -39,6 +40,10 @@ fun AuthMainScreen(
 
     val isLoading = uiState is AuthUiState.Loading
     val errorMessage = (uiState as? AuthUiState.Error)?.message
+
+    if (uiState is AuthUiState.Success) {
+        onLoginSuccess()
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()

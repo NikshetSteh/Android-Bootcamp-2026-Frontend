@@ -49,17 +49,26 @@ fun AppNavigation(
         startDestination = startDestination
     ) {
         composable(NavigationScreens.AUTHORIZATION.routeName) {
-            AuthMainScreen(authViewModel) {
+            AuthMainScreen(authViewModel, onRegisterClick = {
                 navController.navigate(NavigationScreens.REGISTER.routeName)
-            }
+            }, onLoginSuccess = {
+                navController.navigate(BottomNavScreen.Profile.route) {
+                    popUpTo(NavigationScreens.AUTHORIZATION.routeName) { inclusive = true }
+                }
+            })
         }
 
         composable(NavigationScreens.REGISTER.routeName) {
-            RegisterMainScreen(registerScreenViewModel) {
+            RegisterMainScreen(registerScreenViewModel, onBack = {
+                navController.navigate(
+                    NavigationScreens.AUTHORIZATION.routeName
+                )
+            }, onRegisterSuccess = {
                 navController.navigate(BottomNavScreen.Profile.route) {
                     popUpTo(NavigationScreens.AUTHORIZATION.routeName) { inclusive = true }
                 }
             }
+            )
         }
         composable(BottomNavScreen.Profile.route) {
             MainWithNavBar(

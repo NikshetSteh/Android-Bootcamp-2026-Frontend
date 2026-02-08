@@ -1,13 +1,14 @@
-package com.example.authorization.data
+package com.example.authorization.data.dto
 
-import com.example.authorization.data.dto.UserLoginDto
 import com.example.authorization.domain.entites.UserLoginEntity
 import com.example.comon.ErrorResponseDto
+import com.example.comon.LoginResponseDto
 import com.example.comon.Network
 import com.example.comon.RegisterResult
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess

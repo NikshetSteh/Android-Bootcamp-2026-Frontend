@@ -2,6 +2,7 @@ package com.example.user_main.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.user_main.domain.UserResult
 import com.example.user_main.domain.use_cases.LoadUserUseCase
 import com.example.user_main.domain.use_cases.LogoutUseCase
 import com.example.user_main.domain.use_cases.ObserveUserUseCase
@@ -38,11 +39,13 @@ class UserMainScreenViewModel @Inject constructor(
         observeUser()
         loadUser()
     }
+
     fun logout() {
         viewModelScope.launch {
             logoutUseCase()
         }
     }
+
     private fun observeUser() {
         viewModelScope.launch {
             userFlow.collect { user ->
@@ -58,16 +61,21 @@ class UserMainScreenViewModel @Inject constructor(
             _uiState.value = UserUiState.Loading
             val result = loadUserUseCase()
 
-            if (result is com.example.user_main.domain.UserResult.Error) {
+            if (result is UserResult.Error) {
                 _uiState.value = UserUiState.Error(result.message)
+            }
+            if (result is UserResult.NotLoaded) {
+                _uiState.value = UserUiState.NotLoaded
             }
         }
     }
 
     fun openEditDialog() {
-//        val user = (uiState.value as? UserUiState.Success)?.user ?: return
-        editFullName.value = "Иванов Иван"
-        editDepartment.value = "Отдел разработки"
+        val user = (uiState.value as? UserUiState.Success)?.user ?: return
+        editFullName.value = user.fullName
+        editDepartment.value = user.department
+//        editFullName.value = "Иванов Иван"
+//        editDepartment.value = "Отдел разработки"
         _isEditDialogVisible.value = true
     }
 
@@ -95,11 +103,16 @@ class UserMainScreenViewModel @Inject constructor(
             )
 
             when (val result = updateUserUseCase(updatedUser)) {
-                is com.example.user_main.domain.UserResult.Success -> {
+                is UserResult.Success -> {
                     _isEditDialogVisible.value = false
                 }
-                is com.example.user_main.domain.UserResult.Error -> {
+
+                is UserResult.Error -> {
                     _uiState.value = UserUiState.Error(result.message)
+                }
+
+                is UserResult.NotLoaded -> {
+                    _uiState.value = UserUiState.NotLoaded
                 }
             }
         }

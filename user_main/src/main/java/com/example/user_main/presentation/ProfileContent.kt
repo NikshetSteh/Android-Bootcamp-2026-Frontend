@@ -21,10 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.user_main.domain.User
 
-@Preview
 @Composable
 fun ProfileContent(
-    user: User = User("Иван Иванов", "+7 999 123-45-67", "Отдел разработки"),
+    user: User,
     onEditClick: () -> Unit ={},
     onLogoutClick: () -> Unit ={}
 ) {

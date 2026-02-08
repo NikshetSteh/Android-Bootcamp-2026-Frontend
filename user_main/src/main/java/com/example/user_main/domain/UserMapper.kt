@@ -9,7 +9,7 @@ class UserMapper @Inject constructor() {
         User(
             fullName = dto.fullName,
             phoneNumber = dto.phoneNumber,
-            department = dto.department
+            department = dto.department,
         )
 }
 

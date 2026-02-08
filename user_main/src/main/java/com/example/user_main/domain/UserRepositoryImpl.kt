@@ -22,7 +22,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun loadUser(): UserResult {
         val token = tokenRepository.getToken()
-            ?: return UserResult.Error("Пользователь не авторизован")
+            ?: return UserResult.NotLoaded
 
         return when (val result = userNetworkDataSource.getUserByToken(token)) {
             is GetUserResult.Success -> {
