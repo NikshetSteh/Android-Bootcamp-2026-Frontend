@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.comon.ErrorState
 
 @Composable
 fun ProfileScreen(
@@ -17,19 +19,18 @@ fun ProfileScreen(
 
     val editFullName by viewModel.editFullName.collectAsState()
     val editDepartment by viewModel.editDepartment.collectAsState()
-
     Box(modifier = Modifier.fillMaxSize()) {
 
         when (uiState) {
             is UserUiState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                ProfileContentShimmer()
             }
 
             is UserUiState.Error -> {
-                Text(
-                    text = (uiState as UserUiState.Error).message,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
+
+                ErrorState(
+                    onRefresh = { viewModel.loadUser() },
+                    message = (uiState as UserUiState.Error).message
                 )
             }
 
@@ -58,7 +59,10 @@ fun ProfileScreen(
                 onFullNameChange = viewModel::onFullNameChange,
                 onDepartmentChange = viewModel::onDepartmentChange,
                 onDismiss = viewModel::closeEditDialog,
-                onSave = viewModel::saveChanges
+                onSave = {
+                    viewModel.saveChanges()
+                    viewModel.closeEditDialog()
+                }
             )
         }
     }

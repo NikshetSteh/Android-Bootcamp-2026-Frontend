@@ -1,9 +1,10 @@
-package com.example.create_meet.data.presentation
+package com.example.create_meet.presentation
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.comon.ErrorState
 import com.example.create_meet.data.MeetingResponse
 import com.example.create_meet.data.MeetingStatus
 import java.time.Instant
@@ -21,18 +23,21 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun EventsListScreen(
     viewModel: EventsListScreenViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAddNewMeet: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val state = uiState // Capture for smart cast
+    val state = uiState
 
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Расписание встреч") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.refresh() }) {
-                Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+            FloatingActionButton(onClick = {
+               onAddNewMeet()
+            }) {
+                Icon(Icons.Default.Add, contentDescription = "Add meet")
             }
         }
     ) { padding ->
@@ -47,17 +52,10 @@ fun EventsListScreen(
                 }
 
                 is EventsUiState.Error -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Text(text = state.message)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { viewModel.refresh() }) {
-                            Text("Повторить")
-                        }
-                    }
+                    ErrorState(
+                        onRefresh = { viewModel.refresh() },
+                        message = state.message
+                    )
                 }
 
                 is EventsUiState.Success -> {
@@ -124,7 +122,7 @@ fun MeetingItem(
 
             if (!meeting.description.isNullOrBlank()) {
                 Text(
-                    text = meeting.description!!,
+                    text = meeting.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

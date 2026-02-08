@@ -1,4 +1,4 @@
-package com.example.create_meet.data.presentation
+package com.example.create_meet.presentation
 
 import androidx.compose.runtime.Immutable
 import com.example.create_meet.data.MeetingResponse

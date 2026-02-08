@@ -11,7 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.authorization.presentation.AuthScreenViewModel
-import com.example.create_meet.data.presentation.EventsListScreenViewModel
+import com.example.create_meet.presentation.EventsListScreenViewModel
 import com.example.navigation.AppNavigation
 import com.example.navigation.NavigationViewModel
 import com.example.registration.presentation.RegisterScreenViewModel

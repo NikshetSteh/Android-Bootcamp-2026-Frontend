@@ -1,14 +1,11 @@
 package com.example.navigation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -23,8 +20,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.authorization.presentation.AuthMainScreen
 import com.example.authorization.presentation.AuthScreenViewModel
-import com.example.create_meet.data.presentation.EventsListScreen
-import com.example.create_meet.data.presentation.EventsListScreenViewModel
+import com.example.create_meet.presentation.EventsListScreen
+import com.example.create_meet.presentation.EventsListScreenViewModel
 import com.example.registration.presentation.RegisterMainScreen
 import com.example.registration.presentation.RegisterScreenViewModel
 import com.example.user_main.presentation.ProfileScreen
@@ -98,7 +95,10 @@ fun AppNavigation(
                 },
                 profileContent = {
                     EventsListScreen(
-                        viewModel = eventsListScreenViewModel
+                        viewModel = eventsListScreenViewModel,
+                        onAddNewMeet = {
+
+                        }
                     )
                 }
             )
