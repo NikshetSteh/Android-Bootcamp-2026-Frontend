@@ -77,7 +77,7 @@ fun ProfileContentShimmer() {
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(150.dp))
 
         Box(
             modifier = Modifier

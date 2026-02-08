@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
             val navigationViewModel: NavigationViewModel = hiltViewModel()
             val userScreenViewModel: UserMainScreenViewModel = hiltViewModel()
             val eventsListScreenViewModel: EventsListScreenViewModel = hiltViewModel()
-            val addMeetingViewModel: AddMeetingViewModel = hiltViewModel()
 
             AndroidBootcamp2026FrontendTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -42,7 +41,6 @@ class MainActivity : ComponentActivity() {
                             navigationViewModel = navigationViewModel,
                             userMainScreenViewModel = userScreenViewModel,
                             eventsListScreenViewModel = eventsListScreenViewModel,
-                            addMeetingViewModel = addMeetingViewModel
                         )
                     }
 

@@ -29,11 +29,7 @@ class AddMeetingViewModel @Inject constructor(
     var title by mutableStateOf("")
     var description by mutableStateOf("")
     var location by mutableStateOf("")
-
-    var meetingDate by mutableStateOf<LocalDate?>(null)
-    var meetingTime by mutableStateOf<LocalTime?>(null)
-
-    var durationHours by mutableStateOf(1)
+    var durationHours by mutableIntStateOf(1)
     var selectedUsers by mutableStateOf<List<String>>(emptyList())
 
     var users by mutableStateOf<List<UserDto>>(emptyList())
@@ -87,15 +83,6 @@ class AddMeetingViewModel @Inject constructor(
             }
             usersLoading = false
         }
-    }
-
-    fun getIsoStartTime(): String? {
-        val date = meetingDate ?: return null
-        val time = meetingTime ?: return null
-        return date.atTime(time)
-            .atZone(ZoneId.systemDefault())
-            .toInstant()
-            .toString()
     }
 
     fun onSubmit() {

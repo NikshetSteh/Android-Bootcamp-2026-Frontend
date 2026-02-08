@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -37,7 +38,6 @@ fun AppNavigation(
     navigationViewModel: NavigationViewModel,
     userMainScreenViewModel: UserMainScreenViewModel,
     eventsListScreenViewModel: EventsListScreenViewModel,
-    addMeetingViewModel: AddMeetingViewModel,
 ) {
     val navController = rememberNavController()
     val token by navigationViewModel.hasToken.collectAsState()
@@ -109,10 +109,17 @@ fun AppNavigation(
         }
 
         composable(NavigationScreens.ADD_NEW_MEETING.routeName) {
+            val addMeetingViewModel: AddMeetingViewModel = hiltViewModel()
+
             AddMeetingScreen(
                 addMeetingViewModel = addMeetingViewModel
             ) {
-                navController.navigate(BottomNavScreen.Other.route)
+                navController.navigate(BottomNavScreen.Other.route) {
+                    popUpTo(NavigationScreens.ADD_NEW_MEETING.routeName) {
+                        inclusive = true
+                    }
+                }
+
             }
         }
 

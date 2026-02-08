@@ -39,6 +39,16 @@ class UserMainScreenViewModel @Inject constructor(
         observeUser()
         loadUser()
     }
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
+
+    fun refresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            loadUser()
+            _isRefreshing.value = false
+        }
+    }
 
     fun logout() {
         viewModelScope.launch {

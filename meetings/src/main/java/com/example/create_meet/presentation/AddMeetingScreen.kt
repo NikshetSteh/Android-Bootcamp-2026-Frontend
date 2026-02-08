@@ -32,7 +32,10 @@ fun AddMeetingScreen(
     val vm = addMeetingViewModel
 
     if (vm.submitSuccess) {
-        LaunchedEffect(Unit) { onMeetingCreated() }
+        LaunchedEffect(Unit) {
+            onMeetingCreated()
+
+        }
     }
 
     LazyColumn(
